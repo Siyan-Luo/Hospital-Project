@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- This is the head -->
+<head>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <script src="../static/layui/layui.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVF</title>
+</head>
+<!-- This is the body -->
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo "><i class="layui-icon layui-icon-cart"></i>IVF</div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item" ><a href="/index/"><i class="layui-icon layui-icon-table"></i>Goods List</a></li>
+                <!-- <li class="layui-nav-item"><a href="/count/"><i class="layui-icon layui-icon-rmb"></i>预算统计</a></li> -->
+                <li class="layui-nav-item"><a href="/other/"><i class="layui-icon layui-icon-time"></i>Inventory Records</a></li>
+            </ul>
+        </div>
+
+        <div style="padding: 5%;">
+            <!-- 内容主体区域 -->
+            <!-- This is the search bar -->
+            <div class="layui-fluid">
+                <div class="demoTable">
+                    <i class="layui-icon layui-icon-search"></i>
+                    Name：
+                    <div class="layui-inline">
+                        <input class="layui-input" name="search_name" id="search_name" autocomplete="off">
+                    </div>
+                    Reference：
+                    <div class="layui-inline">
+                        <input class="layui-input" name="search_reference" id="search_reference" autocomplete="off">
+                    </div>
+                    Factory:
+                    <div class="layui-inline">
+                        <input class="layui-input" name="search_factory" id="search_factory" autocomplete="off">
+                    </div>
+                    <button type="button" class="layui-btn" id="searchbt" data-type="reload">Search</button>
+                    <button type="button" class="layui-btn" id="addbt" style="float: right;"><i class="layui-icon">&#xe608;</i> Add new item</button>
+                </div>
+            </div>
+            <table class="layui-hide" id="inventory" lay-filter="inventory"></table>
+
+            <script type="text/html" id="toolbarDemo"></script>
+            
+            <script type="text/html" id="barDemo">
+                <!-- <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">Edit</a> -->
+                <a class="layui-btn layui-btn-xs" lay-event="out">Out</a>
+                <a class="layui-btn layui-btn-xs" lay-event="in">In</a>
+                <a class="layui-btn layui-btn-xs" lay-event="qrcode">QR Code</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">Delete</a>
+            </script>
+        </div>
+        <!-- <script type="text/html" id="edit_html">
+            <form class="layui-form" id="edit_form">
+                <div style="padding: 3%;">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_id" id="edit_id" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_name" id="edit_name" lay-verify="required"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Reference</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_reference" id="edit_reference" lay-verify="required"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Factory</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_factory" id="edit_factory"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_lotnumber" id="edit_lotnumber"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Internal Lot</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_internal_lot" id="edit_internal_lot"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Arrival Date</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_arrival" id="edit_arrival"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Expiry Date</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_expiry" id="edit_expiry"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="edit_submit" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </script> -->
+        <script type="text/html" id="in_html">
+            <form class="layui-form"  id="in_form">
+                <div style="padding: 3%;"></div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="in_name" name='in_name' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Reference</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="in_reference" name='in_reference' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Factory</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="in_factory" name='in_factory' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="in_lot" name='in_lot' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Internal Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="in_internal_lot" name='in_internal_lot' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Current inventory</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="in_num" name='in_num' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">In-bound Num</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="in_change" name='in_change' lay-verify="required|number" placeholder="Input in-bound num" class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="in_submit">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <script type="text/html" id="out_html">
+            <form class="layui-form" id="out_form">
+                <div style="padding: 3%;"></div>
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="out_id" id="out_id" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div> -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="out_name" name= 'out_name' lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Reference</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="out_reference" name="out_reference" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Factory</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="out_factory" name="out_factory" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="out_lot" name="out_lot" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Internal Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="out_internal_lot" name="out_internal_lot" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Current inventory</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="out_num" name="out_num" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Out-bound Num</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="out_change" name="out_change" lay-verify="required|number|bigger|more" placeholder="Input out bound num" class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="out_submit" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <script type="text/html" id="del_html">
+            <form class="layui-form"  id="del_form">
+                <div style="padding: 3%;"></div>
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="del_id" id="del_id" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div> -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="del_name" name="del_name" lay-verify="required" readonly='true' class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Reference</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="del_reference" name="del_reference" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Factory</label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="del_factory" name="del_factory" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="del_lot" name="del_lot" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Internal Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text"  id="del_internal_lot" name="del_internal_lot" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Current inventory</label>
+                    <div class="layui-input-inline">
+                      <!-- <input type="text"  id="del_num" lay-verify="zero" readonly="true" class="layui-input"> -->
+                      <input type="text"  id="del_num" name="del_num" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="del_submit">Confirm delete</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <script type="text/html" id="add_html">
+            <form class="layui-form"  id="add_form">
+                <div style="padding: 3%;"></div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_name" id="add_name" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Reference</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_reference" id="add_reference" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Factory</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_factory" id="add_factory" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Lot Number</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_lot" id="add_lot" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Num</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_num" id="add_factory" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">Internal Lot</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_internal_lot" lay-verify="required" class="layui-input">
+                    </div>
+                </div> -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Arrival Date</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_arrival" id="add_arrival" lay-verify="required" placeholder='YYYY-MM-DD' class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Expiry Date</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="add_expiry" id="add_expiry" lay-verify="required" placeholder='YYYY-MM-DD' class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="add_submit">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+        <!-- <script type="text/html" id="qrcode_html">
+            <img id ="qrcode" src="pic.jpg"/>
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                <img src="{{ qrcode("Template") }}" style="width: 200px; height: 200px;" />
+            </div>'
+        </script> -->
+    </div>
+    <script>
+        layui.use(['table','form','layer'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var layer = layui.layer;
+            var $ = layui.jquery;
+            // var get_names = function(name, htmlID) {
+            //      $.get("/data/" + ("?", (name)), function(d) {
+            //          var list = d.data;
+            //          var names = "<option ></option>"
+            //          for (var i = 0; i < list.length; i++) {
+            //              if (Object.keys(list[i])[0] == "id") {
+            //                  names += "<option >" + Object.values(list[i])[1] + "</option>"
+            //              } else {
+            //                  names += "<option >" + Object.values(list[i])[0] + "</option>"
+            //              }
+            //          }
+            //          $("#" + ("?", htmlID)).html(names);
+            //          form.render();
+            //      });
+            //  }
+            
+            table.render({
+                elem: '#inventory'
+                , url:'/data/inventory/'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print']
+                , title: 'inventory table'
+                ,initSort: {
+                    // field: 'needbuy' //排序字段，对应 cols 设定的各字段名
+                    field: 'arrival' //排序字段，对应 cols 设定的各字段名
+                    ,type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+                  }
+                , cols: [[
+                    // { field: 'id', title: 'ID', width: 60, fixed: 'left', sort: true}
+                    // , 
+                    { field: 'name', title: 'Name', width: 100 , sort: true }
+                    , { field: 'reference', title: 'Reference', width: 100, sort: true }
+                    , { field: 'factory', title: 'Factory', width: 100}
+                    , {field: 'lot', title: 'Lot Number', width: 100, sort: true}
+                    , {field: 'internal_lot', title: 'Internal Lot', width: 100, sort: true}
+                    , { field: 'num', title: 'Num', width: 80, sort: true}
+                    , {field: 'arrival', title: 'Arrival Date', width: 120}
+                    , {field: 'expiry', title: 'Expiry Date', width: 120, sort: true}
+                    , { fixed: 'right', title: 'Action', toolbar: '#barDemo', width: 240 }
+                ]]
+                ,id: 'inventory_tablerender'
+                ,page: false
+                ,skin: 'row'
+                ,even: true
+                ,height: 'full-160'
+                // ,done:function(res,curr,count){
+                //  //layui.table.cache['inventory_tablerender']获取表格中的数据，完成排序的返回排完序后的数据
+                //     for(var i in layui.table.cache['inventory_tablerender']){
+                //             var ID = layui.table.cache['inventory_tablerender'][i]
+                //             if(ID.number < ID.safenumber){
+                //              //改变整行颜色为红色
+                //              $("tr[data-index='" + i + "']").css("background-color","red")
+                //              //改变整行字体颜色为白色
+                //              $("tr[data-index='" + i + "']").css("color","white")
+                //                 layer.confirm("Warning:"+ID.reference+" Min number reached, please place new orders",function(index){
+                //                         layer.close(index);
+                //                 })
+                //             }
+                //         }
+
+                // },
+                ,
+                
+            });
+
+
+            //监听行工具事件
+            table.on('tool(inventory)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.open({
+                        type: 1,
+                        area: ['380px', '550px'],
+                        title:["Delete Item",'font-size:25px;'],
+                        content:$("#del_html").html(),
+                        // zIndex: layer.zIndex, //重点1
+                        success:function () {
+                            $("#del_name").val(data.name)
+                            $("#del_reference").val(data.reference)
+                            $("#del_factory").val(data.factory)
+                            $("#del_lot").val(data.lot)
+                            $("#del_internal_lot").val(data.internal_lot)
+                            // $("#del_arrival").val(data.arrival)
+                            // $("#del_expiry").val(data.expiry)
+                            $("#del_num").val(data.num)
+                            form.render();
+                        }
+                    })
+                } else if (obj.event === 'in') {
+                    layer.open({
+                        type: 1,
+                        area: ['380px', '550px'],
+                        title:["In-bound",'font-size:25px;'],
+                        content:$("#in_html").html(),
+                        success:function () {
+                            $("#in_name").val(data.name)
+                            $("#in_reference").val(data.reference)
+                            $("#in_factory").val(data.factory)
+                            $("#in_lot").val(data.lot)
+                            $("#in_internal_lot").val(data.internal_lot)
+                            // $("#in_arrival").val(data.arrival)
+                            // $("#in_expiry").val(data.expiry)
+                            $("#in_num").val(data.num)
+                            
+                            form.render()
+                        }
+                    })
+                }else if (obj.event === 'out') {
+                    layer.open({
+                        type: 1,
+                        area: ['380px', '550px'],
+                        title:["Out-bound",'font-size:25px;'],
+                        content:$("#out_html").html(),
+                        success:function () {
+                            $("#out_name").val(data.name)
+                            $("#out_reference").val(data.reference)
+                            $("#out_factory").val(data.factory)
+                            $("#out_lot").val(data.lot)
+                            $("#out_internal_lot").val(data.internal_lot)
+                            // $("#out_arrival").val(data.arrival)
+                            // $("#out_expiry").val(data.expiry)
+                            $("#out_num").val(data.num)
+                            form.render()
+                            
+                        }
+                    })
+                }
+                else if (obj.event ==='qrcode') {
+                    // var img = '<img src = "pic.jpg" />' ;
+                    layer.open({
+                        type: 1,
+                        shade: false,
+                        title: ["QR code",'font-size:25px;'],
+                        // area: ['auto', 'auto'],
+                        // area: [img.width + 'px', img.height + 'px'],
+                        area: ['380px', '550px'],
+                        // content: '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><img src="{{ qrcode("Template") }}" style="width: 200px; height: 200px;" /></div>'
+                        content: '<div style="display: flex; justify-content: center; align-items: center; height: 100%;">'+
+                            '<img src="{{ qrcode('+data+') }}" style="width: 200px; height: 200px;" />'+
+                            '</div>'
+                    })
+                }
+            });
+            var active = {
+                reload: function(){
+                    var search_name = $('#search_name');
+                    var search_reference = $('#search_reference');
+                    var search_factory = $('#search_factory')
+                    // var search_arrival = $('#search_arrival');
+                    // var search_expiry = $('#search_expiry');
+                    //执行重载
+                    table.reload('inventory_tablerender', {
+                        page: {
+                           curr: 1 //重新从第 1 页开始-->
+                        },
+                        where: {
+                            search_name: search_name.val(),
+                            search_reference: search_reference.val(),
+                            search_factory: search_factory.val()
+                            // ,
+                            // search_arrival:search_reference.val(),
+                            // search_expiry: search_expiry.val()
+                        }
+                  }, 'data');
+                }
+            };      
+
+            $('#searchbt').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            
+            $('#addbt').on('click', function(){
+                layer.open({
+                        type: 1,
+                        area: ['380px', '500px'],
+                        title:['Add new item','font-size:25px;'],
+                        content:$("#add_html").html(),
+                        success:function(){
+                            form.render();
+                        }
+                    })
+            });
+            form.verify({
+              zero: [
+                /^[0.]+$/
+                // ,'当前仍有库存，请出库后删除！'
+                ,"It's still in stock, please dispatch the rest before deletion."
+              ],
+              bigger:[
+                  /^[1-9]+[0-9]*$/
+                ,'The amount must be larger than 0！'
+              ],
+              more:function (value){ //value：表单的值、item：表单的DOM对象
+                  if(Number(value)>Number($("#out_num").val())){
+                      return 'The dispatch amount has exceeded the inventory count!';
+                  }
+              }
+            });
+            // form.on('submit(edit_submit)', function(data){
+            //     layer.closeAll();
+            //     $.get("/op/edit", $("#edit_form").serialize() );
+            //     $("#searchbt").click();
+            //     return false;
+            // });
+            form.on('submit(add_submit)', function(data){
+                layer.closeAll();
+                $.get("/op/add", $("#add_form").serialize());
+                $("#searchbt").click();
+                return false;
+            });
+            form.on('submit(del_submit)', function(data){
+                layer.closeAll();
+                $.get("/op/del", $("#del_form").serialize());
+                $("#searchbt").click();
+                return false;
+            });
+            form.on('submit(in_submit)', function(data){
+                layer.closeAll();
+                $.get("/op/in", $("#in_form").serialize());
+                $("#searchbt").click();
+                return false;
+            });
+            form.on('submit(out_submit)', function(data){
+                layer.closeAll();
+                $.get("/op/out",  $("#out_form").serialize());
+                $("#searchbt").click();
+                return false;
+            });
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+Flask==1.1.2
+Flask-CORS
+Flask-QRcode
+sqlite3

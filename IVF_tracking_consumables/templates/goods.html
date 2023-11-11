@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- This is the head -->
+<head>
+    <link rel="stylesheet" href="../static/layui/css/layui.css">
+    <script src="../static/layui/layui.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVF</title>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo "><i class="layui-icon layui-icon-cart"></i>IVF</div>
+            <!-- header bar -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item" ><a href="/index/"><i class="layui-icon layui-icon-table"></i>Goods List</a></li>
+                <!-- <li class="layui-nav-item"><a href="/count/"><i class="layui-icon layui-icon-rmb"></i>预算统计</a></li> -->
+                <li class="layui-nav-item"><a href="/other/"><i class="layui-icon layui-icon-time"></i>Inventory Records</a></li>
+            </ul>
+        </div>
+
+        <div style="padding: 5%;">
+            <!-- 内容主体区域 -->
+            <div class="layui-fluid">
+                <!-- Search bar -->
+                <div class="demoTable">
+                    <i class="layui-icon layui-icon-search"></i>
+                    Name：
+                    <div class="layui-inline">
+                        <input class="layui-input" name="search_name" id="search_name" autocomplete="off">
+                    </div>
+                    Reference：
+                    <div class="layui-inline">
+                        <input class="layui-input" name="search_reference" id="search_reference" autocomplete="off">
+                    </div>
+                    Factory:
+                    <div class="layui-inline">
+                        <input class="layui-input" name="search_factory" id="search_factory" autocomplete="off">
+                    </div>
+                    <button type="button" class="layui-btn" id="searchbt" data-type="reload">Search</button>
+                    <!-- <button type="button" class="layui-btn" id="addbt" style="float: right;"><i class="layui-icon">&#xe608;</i> Add new item</button> -->
+                </div>
+            </div>
+            <table class="layui-hide" id="goods" lay-filter="goods"></table>
+
+            <script type="text/html" id="toolbarDemo"></script>
+            
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">Edit</a>
+            </script>
+        </div>
+        <script type="text/html" id="edit_html">
+            <form class="layui-form" id="edit_form">
+                <div style="padding: 3%;">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_name" id="edit_name" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Reference</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_reference" id="edit_reference" lay-verify="required" readonly="true" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Factory</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_factory" id="edit_factory"  readonly="true" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">Current inventory</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_total_num" id="edit_total_num" readonly="true" class="layui-input">
+                    </div>
+                </div> -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Min Num</label>
+                    <div class="layui-input-inline">
+                      <input type="text" name="edit_safenumber" id="edit_safenumber" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="edit_submit" >Submit</button>
+                    </div>
+                </div>
+            </form>
+        </script>
+    </div>
+    <script>
+        layui.use(['table','form','layer'], function () {
+            var table = layui.table;
+            var form = layui.form;
+            var layer = layui.layer;
+            var $ = layui.jquery;
+            
+            // var get_names = function(name, htmlID) {
+            //         $.get("/data/" + ("?", (name)), function(d) {
+            //             var list = d.data;
+            //             var names = "<option ></option>"
+            //             for (var i = 0; i < list.length; i++) {
+            //                 if (Object.keys(list[i])[0] == "id") {
+            //                     names += "<option >" + Object.values(list[i])[1] + "</option>"
+            //                 } else {
+            //                     names += "<option >" + Object.values(list[i])[0] + "</option>"
+            //                 }
+            //             }
+            //             $("#" + ("?", htmlID)).html(names);
+            //             form.render();
+            //         });
+            //     }
+            
+            table.render({
+                elem: '#goods'
+                , url:'/data/goods/'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print']
+                , title: 'Goods table'
+                ,initSort: {
+                    field: 'total_num' //排序字段，对应 cols 设定的各字段名
+                    ,type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+                  }
+                , cols: [[
+                    // { field: 'id', title: 'ID', width: 60, fixed: 'left'}
+                    { field: 'name', title: 'Name', width: 100 , sort: true }
+                    , { field: 'reference', title: 'Reference', width: 100, sort:true }
+                    , { field: 'factory', title: 'Factory', width: 100}
+                    , { field: 'total_num', title: 'Num', width: 100, sort:true }
+                    , { field: 'safenumber', title: 'Min Num', width: 100, sort:true }
+                    , { fixed: 'right', title: 'Action', toolbar: '#barDemo', width: 100 }
+                ]]
+                ,id: 'goods_tablerender'
+                ,page: false
+                ,skin: 'row'
+                ,even: true
+                ,height: 'full-160'
+                ,done:function(res,curr,count){
+                    //layui.table.cache['goods_tablerender']
+                    for(var i in layui.table.cache['goods_tablerender']){
+                            var ID = layui.table.cache['goods_tablerender'][i]
+                            if(ID.total_num < ID.safenumber){
+                                $("tr[data-index='" + i + "']").css("background-color","red")
+                                $("tr[data-index='" + i + "']").css("color","white")
+                                layer.confirm("Warning: Min number reached, please place new orders",function(index){
+                                        layer.close(index);
+                                })
+                            }
+                        }
+
+                },
+            });
+
+
+            table.on('tool(goods)', function (obj) {
+                var data = obj.data;
+                if (obj.event ==='edit') {
+                    layer.open({
+                        type: 1,
+                        area: ['380px', '580px'],
+                        title:["Edit information",'font-size:25px;'],
+                        content:$("#edit_html").html(),
+                        success:function () {
+                            // $("#edit_id").val(data.id)
+                            $("#edit_name").val(data.name)
+                            $("#edit_reference").val(data.reference)
+                            $("#edit_factory").val(data.factory)
+                            // $("edit_total_num").val(data.total_num)
+                            $("#edit_safenumber").val(data.safenumber)
+
+                            form.render()
+                        }
+                    })
+                }
+            });
+            var active = {
+                reload: function(){
+                    // var search_process = $('#search_process');
+                    var search_name = $('#search_name');
+                    var search_reference = $('#search_reference');
+                    var search_factory = $('search_factory')
+                    //执行重载
+                    table.reload('goods_tablerender', {
+                        page: {
+                           curr: 1 //重新从第 1 页开始-->
+                        },
+                        where: {
+                            // search_process: search_process.val(),
+                            search_name: search_name.val(),
+                            search_reference: search_reference.val(),
+                            search_factory: search_factory.val()
+                        }
+                  }, 'data');
+                }
+            };
+
+            $('#searchbt').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            
+            form.on('submit(edit_submit)', function(data){
+                layer.closeAll();
+                $.get("/op/edit", $("#edit_form").serialize() );
+                $("#searchbt").click();
+                return false;
+            });
+        });
+        
+    </script>
+</body>
+</html>
